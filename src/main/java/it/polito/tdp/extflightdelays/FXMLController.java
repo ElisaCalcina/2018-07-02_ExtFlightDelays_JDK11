@@ -3,7 +3,9 @@ package it.polito.tdp.extflightdelays;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.extflightdelays.model.Airport;
 import it.polito.tdp.extflightdelays.model.Model;
+import it.polito.tdp.extflightdelays.model.Rotte;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -33,7 +35,7 @@ public class FXMLController {
     private Button btnAnalizza;
 
     @FXML
-    private ComboBox<?> cmbBoxAeroportoPartenza;
+    private ComboBox<Airport> cmbBoxAeroportoPartenza;
 
     @FXML
     private Button btnAeroportiConnessi;
@@ -47,10 +49,41 @@ public class FXMLController {
     @FXML
     void doAnalizzaAeroporti(ActionEvent event) {
 
+    	txtResult.clear();
+    	String distanza=this.distanzaMinima.getText();
+    	Integer distanzaI=0;
+    	
+    	try {
+    		
+    		distanzaI= Integer.parseInt(distanza);
+    		
+    	}catch(NumberFormatException e) {
+    		txtResult.appendText("Devi inserire un numero");
+    	}
+    	
+    	this.model.creaGrafo(distanzaI);
+    	
+    	txtResult.appendText("Grafo creato\n");
+    	txtResult.appendText("#vertici: " + this.model.nVertici()+"\n");
+    	txtResult.appendText("#archi: " + this.model.nArchi()+"\n");
+
+    	this.cmbBoxAeroportoPartenza.getItems().addAll(this.model.getAeroporti());
     }
 
     @FXML
     void doCalcolaAeroportiConnessi(ActionEvent event) {
+    	txtResult.clear();
+    	
+    	Airport aeroporto= this.cmbBoxAeroportoPartenza.getValue();
+    	if(aeroporto==null) {
+    		txtResult.appendText("Devi selezionare un aeroporto\n");
+    	}
+    	
+    	txtResult.appendText("Aeroporti adiacenti a "+aeroporto+"\n");
+    	
+    	for(Rotte r: this.model.listaVicini(aeroporto)) {
+    		txtResult.appendText(r.toString()+"\n");
+    	}
 
     }
 
